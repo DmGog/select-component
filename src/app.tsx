@@ -4,11 +4,17 @@ import { useState } from 'react';
 import { options } from '@/data/data';
 
 function App() {
-  const [value, setValue] = useState('');
-  const handleChange = (newValue: string) => {
-    setValue(newValue);
-  };
-  return <Select options={options} value={value} onChange={handleChange} />;
+  const [value, setValue] = useState<null | string>(null);
+
+  return (
+    <Select
+      options={options}
+      value={value}
+      onChange={event => {
+        setValue(event.target.value);
+      }}
+    />
+  );
 }
 
 export default App;

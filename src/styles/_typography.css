@@ -2,14 +2,8 @@
 
 :root {
   --font-family: "Roboto", sans-serif;
-
-  // line heights
   --line-height-base: 160%;
-
-  // font weights
   --font-weight-regular: 400;
-
-  // font sizes
   --font-size-base: 16px;
 
   -webkit-font-smoothing: antialiased;

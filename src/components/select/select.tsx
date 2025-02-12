@@ -1,17 +1,56 @@
-import { ChangeEvent, memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, memo, MutableRefObject, ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import s from './select.module.css';
 import Icon from '@/assets/icon';
 
-export type Option = {
+type PrimitiveType = string | number | null;
+
+export type Option<T> = {
   label: string;
-  value: string;
+  value: T;
 };
 
-type Props = {
-  options: Option[];
-  value: string;
-  onChange: (value: string) => void;
+type Props<T extends PrimitiveType> = {
+  options: Option<T>[];
+  value: T;
+  onChange: (event: SelectEventType<T>) => void;
+  isPortal?: boolean;
   placeholder?: string;
+};
+
+type State = {
+  isOpen: boolean;
+  search: string;
+  filteredOptions: Option<any>[];
+};
+
+type Action =
+  | { type: 'TOGGLE_DROPDOWN' }
+  | { type: 'CLOSE_DROPDOWN' }
+  | { type: 'SEARCH_UPDATED'; payload: string; options: Option<any>[] }
+  | { type: 'OPTION_SELECTED'; payload: Option<any> };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'TOGGLE_DROPDOWN':
+      return { ...state, isOpen: !state.isOpen };
+    case 'CLOSE_DROPDOWN':
+      return { ...state, isOpen: false };
+    case 'SEARCH_UPDATED':
+      return {
+        ...state,
+        search: action.payload,
+        filteredOptions: action.options.filter(option => option.label.toLowerCase().startsWith(action.payload.trim().toLowerCase())),
+      };
+    case 'OPTION_SELECTED':
+      return {
+        ...state,
+        search: '',
+        isOpen: false,
+      };
+    default:
+      return state;
+  }
 };
 
 const useHandleClickOutside = (elementRef: MutableRefObject<HTMLElement | null>, onClick: () => void) => {
@@ -26,41 +65,99 @@ const useHandleClickOutside = (elementRef: MutableRefObject<HTMLElement | null>,
   }, []);
 };
 
-export const Select = memo(({ options, value, onChange, placeholder = '...select' }: Props) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>('');
-  const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
-  const selectRef = useRef<HTMLDivElement | null>(null);
+function createSyntheticEventObject<T>(value: T): SelectEventType<T> {
+  return {
+    target: { value },
+  };
+}
 
-  function calculateFilteredOptions() {
-    const normalizedSearchValue = search.trim().toLowerCase();
-    return options.filter(option => option.label.toLowerCase().startsWith(normalizedSearchValue));
-  }
+export type SelectEventType<T> = {
+  target: {
+    value: T;
+  };
+};
+
+const useSelect = <T,>(options: Option<T>[], onChange: (event: SelectEventType<T>) => void, value: T) => {
+  const selectRef = useRef<HTMLDivElement | null>(null);
+  const [{ isOpen, search, filteredOptions }, dispatch] = useReducer(reducer, {
+    isOpen: false,
+    search: '',
+    filteredOptions: options,
+  });
 
   useEffect(() => {
-    setFilteredOptions(calculateFilteredOptions());
+    dispatch({ type: 'SEARCH_UPDATED', payload: search, options });
   }, [options]);
 
-  useHandleClickOutside(selectRef, () => setIsOpen(false));
+  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN' }));
 
-  const handleSelect = (option: Option) => {
-    setSearch('');
-    setIsOpen(false);
-    selectRef.current?.focus();
-    onChange(option.value);
-  };
+  const handleSelect = useCallback(
+    (option: Option<T>) => {
+      dispatch({ type: 'OPTION_SELECTED', payload: option });
+      selectRef.current?.focus();
+      onChange(createSyntheticEventObject(option.value));
+    },
+    [dispatch, onChange],
+  );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setFilteredOptions(calculateFilteredOptions());
-    onChange(search);
+    dispatch({ type: 'SEARCH_UPDATED', payload: e.target.value, options });
   };
 
-  const toggleOption = () => setIsOpen(prev => !prev);
+  const toggleOption = () => dispatch({ type: 'TOGGLE_DROPDOWN' });
 
-  const displayValue = search || options.find(option => option.value === value)?.label || '';
+  const displayValue = useMemo(() => {
+    return search || options.find(option => option.value === value)?.label || '';
+  }, [search, options, value]);
 
-  const dropdown = (
+  return {
+    displayValue,
+    toggleOption,
+    handleInputChange,
+    handleSelect,
+    isOpen,
+    filteredOptions,
+    selectRef,
+  };
+};
+
+export const Select = <T extends PrimitiveType>({ options, value, onChange, isPortal = false, placeholder = '...select' }: Props<T>) => {
+  const { handleSelect, handleInputChange, isOpen, displayValue, toggleOption, filteredOptions, selectRef } = useSelect(
+    options,
+    onChange,
+    value,
+  );
+
+  return (
+    <div className={s.selectContainer} ref={selectRef} aria-expanded={isOpen} tabIndex={0}>
+      <div className={s.selectInput} onClick={toggleOption} role="combobox" aria-haspopup="listbox" aria-controls="select-dropdown">
+        <input type="text" value={displayValue} onChange={handleInputChange} aria-autocomplete="list" placeholder={placeholder} />
+        <div className={`${s.icon} ${isOpen ? s.iconOpen : ''}`}>
+          <Icon />
+        </div>
+      </div>
+      {isOpen &&
+        (isPortal ? (
+          createPortal(
+            <MemoizedDropdown value={value} filteredOptions={filteredOptions} isOpen={isOpen} handleSelect={handleSelect} />,
+            document.body,
+          )
+        ) : (
+          <MemoizedDropdown value={value} filteredOptions={filteredOptions} isOpen={isOpen} handleSelect={handleSelect} />
+        ))}
+    </div>
+  );
+};
+
+type DropProps<T extends PrimitiveType> = {
+  filteredOptions: Option<T>[];
+  value: T;
+  isOpen: boolean;
+  handleSelect: (option: Option<T>) => void;
+};
+
+const Dropdown = <T extends PrimitiveType>({ filteredOptions, value, isOpen, handleSelect }: DropProps<T>) => {
+  return (
     <ul className={s.selectDropdown} role="listbox" aria-hidden={!isOpen}>
       {filteredOptions.length > 0 ? (
         filteredOptions.map(option => (
@@ -81,18 +178,6 @@ export const Select = memo(({ options, value, onChange, placeholder = '...select
       )}
     </ul>
   );
+};
 
-  return (
-    <div className={s.selectContainer} ref={selectRef} aria-expanded={isOpen} tabIndex={0}>
-      <div className={s.selectInput} onClick={toggleOption} role="combobox" aria-haspopup="listbox" aria-controls="select-dropdown">
-        <input type="text" value={displayValue} onChange={handleInputChange} aria-autocomplete="list" placeholder={placeholder} />
-        <div className={`${s.icon} ${isOpen ? s.iconOpen : ''}`}>
-          <Icon />
-        </div>
-      </div>
-      {isOpen && dropdown}
-    </div>
-  );
-});
-
-Select.displayName = 'Select';
+const MemoizedDropdown = memo(Dropdown) as <T extends PrimitiveType>(props: DropProps<T>) => ReactNode;
