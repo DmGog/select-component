@@ -1,7 +1,14 @@
-import s from './app.module.css';
+import './app.css';
+import { Select } from '@/components/select/select';
+import { useState } from 'react';
+import { options } from '@/data/data';
 
 function App() {
-  return <div className={s.root}>hello</div>;
+  const [value, setValue] = useState('');
+  const handleChange = (newValue: string) => {
+    setValue(newValue);
+  };
+  return <Select options={options} value={value} onChange={handleChange} />;
 }
 
 export default App;

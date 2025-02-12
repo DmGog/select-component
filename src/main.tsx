@@ -1,8 +1,5 @@
-import {createRoot} from 'react-dom/client';
-import './shared/styles/index.scss';
-import App from "@/app";
+import { createRoot } from 'react-dom/client';
+import '@/styles/index.scss';
+import App from '@/app';
 
-
-createRoot(document.getElementById('root')!).render(
-    <App />
-);
+createRoot(document.getElementById('root')!).render(<App />);

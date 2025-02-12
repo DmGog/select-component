@@ -115,4 +115,7 @@ legend {
 body {
   width: 100%;
   min-width: 360px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
 }
