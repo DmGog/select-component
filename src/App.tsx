@@ -1,7 +1,7 @@
 import './app.css';
-import { Select } from '@/components/select/select';
 import { useState } from 'react';
-import { options } from '@/data/data';
+import { options } from './data/mock-data';
+import { Select } from '@/components/select';
 
 function App() {
   const [value, setValue] = useState<null | string>(null);

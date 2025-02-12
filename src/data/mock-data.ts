@@ -1,4 +1,4 @@
-import { Option } from '@/components/select/select';
+import { Option } from '@/components/select';
 
 export const options: Option<string>[] = [
   { label: 'Москва', value: 'moscow' },
