@@ -1,0 +1,18 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap';
+
+:root {
+  --font-family: "Roboto", sans-serif;
+
+  // line heights
+  --line-height-m: 143%;
+
+  // font weights
+  --font-weight-regular: 400;
+
+  // font sizes
+  --font-size-base: 16px;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizespeed;
+  letter-spacing: 0.1px;
+}
