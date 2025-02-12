@@ -1,9 +1,9 @@
 import { createPortal } from 'react-dom';
-import { Option, PrimitiveType, SelectEventType } from './types';
-import s from './select.module.css';
-import Icon from '@/assets/icon';
-import { useSelect } from './use-select';
+import { Option, PrimitiveType, SelectEventType } from './types/types';
+import s from './styles/select.module.css';
+import { useSelect } from './hooks/use-select';
 import { MemoizedDropdown } from './Dropdown';
+import Icon from '@/assets/Icon';
 
 type Props<T extends PrimitiveType> = {
   options: Option<T>[];

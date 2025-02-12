@@ -1,6 +1,6 @@
-import { memo, ReactNode } from 'react';
-import s from './dropdown.module.css';
-import { Option, PrimitiveType } from './types';
+import { memo, ReactNode, useEffect, useRef } from 'react';
+import s from './styles/dropdown.module.css';
+import { Option, PrimitiveType } from './types/types';
 
 type Props<T extends PrimitiveType> = {
   filteredOptions: Option<T>[];
@@ -9,8 +9,18 @@ type Props<T extends PrimitiveType> = {
   handleSelect: (option: Option<T>) => void;
 };
 const Dropdown = <T extends PrimitiveType>({ filteredOptions, value, isOpen, handleSelect }: Props<T>) => {
+  const dropdownRef = useRef<HTMLUListElement | null>(null);
+  const selectedIndex = filteredOptions.findIndex(option => option.value === value);
+
+  useEffect(() => {
+    if (isOpen && dropdownRef.current && selectedIndex !== -1) {
+      const itemHeight = 36;
+      dropdownRef.current.scrollTop = selectedIndex * itemHeight;
+    }
+  }, [isOpen]);
+
   return (
-    <ul className={s.selectDropdown} role="listbox" aria-hidden={!isOpen}>
+    <ul ref={dropdownRef} className={s.selectDropdown} role="listbox" aria-hidden={!isOpen}>
       {filteredOptions.length > 0 ? (
         filteredOptions.map(option => (
           <li

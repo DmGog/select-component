@@ -1,6 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useReducer, useRef, useMemo } from 'react';
-import { reducer } from './reducer';
-import { Option, SelectEventType } from './types';
+import { ChangeEvent, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { selectReducer } from '../reducers/select.reducer';
+import { Option, SelectEventType } from '../types/types';
 import { useHandleClickOutside } from './use-handle-click-outside';
 
 function createSyntheticEventObject<T>(value: T): SelectEventType<T> {
@@ -11,7 +11,7 @@ function createSyntheticEventObject<T>(value: T): SelectEventType<T> {
 
 export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEventType<T>) => void, value: T) => {
   const selectRef = useRef<HTMLDivElement | null>(null);
-  const [{ isOpen, search, filteredOptions }, dispatch] = useReducer(reducer, {
+  const [{ isOpen, search, filteredOptions }, dispatch] = useReducer(selectReducer, {
     isOpen: false,
     search: '',
     filteredOptions: options,
@@ -25,15 +25,18 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
 
   const handleSelect = useCallback(
     (option: Option<T>) => {
-      dispatch({ type: 'OPTION_SELECTED', payload: option });
+      dispatch({ type: 'OPTION_SELECTED', payload: option, options });
       selectRef.current?.focus();
       onChange(createSyntheticEventObject(option.value));
     },
-    [dispatch, onChange],
+    [dispatch, onChange, search],
   );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: 'SEARCH_UPDATED', payload: e.target.value, options });
+    const matchedOption = options.find(option => option.label === search);
+    const typedValue = search === '' ? (null as T) : matchedOption ? matchedOption.value : (search as T);
+    onChange(createSyntheticEventObject(typedValue));
   };
 
   const toggleOption = () => dispatch({ type: 'TOGGLE_DROPDOWN' });

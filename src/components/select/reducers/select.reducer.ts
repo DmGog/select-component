@@ -1,4 +1,4 @@
-import { Option } from './types';
+import { Option } from '../types/types';
 
 export type State = {
   isOpen: boolean;
@@ -10,9 +10,9 @@ export type Action =
   | { type: 'TOGGLE_DROPDOWN' }
   | { type: 'CLOSE_DROPDOWN' }
   | { type: 'SEARCH_UPDATED'; payload: string; options: Option<any>[] }
-  | { type: 'OPTION_SELECTED'; payload: Option<any> };
+  | { type: 'OPTION_SELECTED'; payload: Option<any>; options: Option<any>[] };
 
-export const reducer = (state: State, action: Action): State => {
+export const selectReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'TOGGLE_DROPDOWN':
       return { ...state, isOpen: !state.isOpen };
@@ -29,6 +29,7 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         search: '',
         isOpen: false,
+        filteredOptions: action.payload ? action.options : state.filteredOptions,
       };
     default:
       return state;
