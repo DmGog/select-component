@@ -53,7 +53,7 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     }
   }, [highlightIndex, isOpen, filteredOptions.length]);
 
-  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN', payload: value as string, options }));
+  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN', payload: value as string, options }), isOpen);
 
   const handleSelect = useCallback(
     (option: Option<T>) => {
@@ -76,27 +76,30 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     setHighlightIndex(-1);
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      if (isOpen && highlightIndex !== -1) {
-        handleSelect(filteredOptions[highlightIndex]);
-      } else {
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter') {
+        if (isOpen && highlightIndex !== -1) {
+          handleSelect(filteredOptions[highlightIndex]);
+        } else {
+          toggleOption();
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setIsKeyboardNavigation(true);
+        setLastInteraction('keyboard');
+        setHighlightIndex(prev => (prev === filteredOptions.length - 1 ? 0 : prev + 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setIsKeyboardNavigation(true);
+        setLastInteraction('keyboard');
+        setHighlightIndex(prev => (prev === 0 ? filteredOptions.length - 1 : prev - 1));
+      } else if (e.key === 'Escape') {
         toggleOption();
       }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setIsKeyboardNavigation(true);
-      setLastInteraction('keyboard');
-      setHighlightIndex(prev => (prev === filteredOptions.length - 1 ? 0 : prev + 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setIsKeyboardNavigation(true);
-      setLastInteraction('keyboard');
-      setHighlightIndex(prev => (prev === 0 ? filteredOptions.length - 1 : prev - 1));
-    } else if (e.key === 'Escape') {
-      toggleOption();
-    }
-  };
+    },
+    [isOpen, highlightIndex, toggleOption],
+  );
 
   const handleMouseClick = () => {
     setLastInteraction('mouse');
