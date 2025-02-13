@@ -30,9 +30,14 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
     dropdownRef,
   } = useSelect(options, onChange, value);
 
+  const classNames = {
+    selectContainer: `${s.selectContainer} ${isPortal ? s.selectContainerPortal : ''}`,
+    iconClassName: `${s.icon} ${isOpen ? s.iconOpen : ''}`,
+  };
+
   const selectContent = (
     <div
-      className={`${s.selectContainer} ${isPortal ? s.selectContainerPortal : ''}`}
+      className={classNames.selectContainer}
       ref={selectRef}
       aria-expanded={isOpen}
       tabIndex={0}
@@ -50,7 +55,7 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
         aria-expanded={isOpen}
       >
         <input type="text" value={displayValue} onChange={handleInputChange} placeholder={placeholder} aria-controls="dropdown-list" />
-        <div className={`${s.icon} ${isOpen ? s.iconOpen : ''}`}>
+        <div className={classNames.iconClassName}>
           <Icon />
         </div>
       </div>

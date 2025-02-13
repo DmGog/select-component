@@ -1,10 +1,6 @@
 .selectContainer {
     position: relative;
-
     width: 352px;
-
-    font-family: Roboto, sans-serif;
-
     border-radius: 4px;
     outline: 1px solid var(--color-border-default);
 }

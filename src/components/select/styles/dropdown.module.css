@@ -29,16 +29,18 @@
     text-align: center;
 }
 
-.focused {
-    background-color: var(--color-background-hover);
-}
-
+.focused,
 .selectItem:hover {
     background-color: var(--color-background-hover);
 }
 
 .selected {
     background-color: var(--color-background-selected);
+}
+
+.selected:hover,
+.selected:focus {
+    background-color: var(--color-background-selected-hover);
 }
 
 .noOptions {
