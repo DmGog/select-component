@@ -29,7 +29,7 @@ export const selectReducer = (state: State, action: Action): State => {
         ...state,
         search: '',
         isOpen: false,
-        filteredOptions: action.payload ? action.options : state.filteredOptions,
+        filteredOptions: action.options,
       };
     default:
       return state;

@@ -66,9 +66,6 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: 'SEARCH_UPDATED', payload: e.target.value, options });
-    const matchedOption = options.find(option => option.label === search);
-    const typedValue = search === '' ? (null as T) : matchedOption ? matchedOption.value : (search as T);
-    onChange(createSyntheticEventObject(typedValue));
   };
 
   const toggleOption = () => {
