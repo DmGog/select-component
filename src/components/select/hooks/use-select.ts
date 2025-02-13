@@ -53,7 +53,13 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     }
   }, [highlightIndex, isOpen, filteredOptions.length]);
 
-  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN', payload: value as string, options }), isOpen);
+  useHandleClickOutside(
+    selectRef,
+    () => {
+      dispatch({ type: 'CLOSE_DROPDOWN' });
+    },
+    isOpen,
+  );
 
   const handleSelect = useCallback(
     (option: Option<T>) => {
@@ -105,6 +111,11 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     setLastInteraction('mouse');
   };
 
+  const handleOnBlur = useCallback(() => {
+    dispatch({ type: 'BLUR_EVENT', payload: value as string, options });
+    dispatch({ type: 'CLOSE_DROPDOWN' });
+  }, [dispatch, value]);
+
   const displayValue = useMemo(() => {
     if (search === '') {
       return '';
@@ -127,5 +138,6 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     isKeyboardNavigation,
     handleMouseClick,
     dropdownRef,
+    handleOnBlur,
   };
 };
