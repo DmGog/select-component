@@ -6,4 +6,5 @@ const Icon = memo(() => (
   </svg>
 ));
 
+Icon.displayName = 'Icon';
 export default Icon;

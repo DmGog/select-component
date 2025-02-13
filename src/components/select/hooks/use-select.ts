@@ -14,7 +14,7 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
   const dropdownRef = useRef<HTMLUListElement | null>(null);
   const [{ isOpen, search, filteredOptions }, dispatch] = useReducer(selectReducer, {
     isOpen: false,
-    search: '',
+    search: null,
     filteredOptions: options,
   });
 
@@ -65,6 +65,9 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
   );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      dispatch({ type: 'TOGGLE_DROPDOWN' });
+    }
     dispatch({ type: 'SEARCH_UPDATED', payload: e.target.value, options });
   };
 
@@ -72,10 +75,6 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     dispatch({ type: 'TOGGLE_DROPDOWN' });
     setHighlightIndex(-1);
   };
-
-  const displayValue = useMemo(() => {
-    return search || options.find(option => option.value === value)?.label || '';
-  }, [search, options, value]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
@@ -102,6 +101,13 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
   const handleMouseClick = () => {
     setLastInteraction('mouse');
   };
+
+  const displayValue = useMemo(() => {
+    if (search === '') {
+      return '';
+    }
+    return search || options.find(option => option.value === value)?.label || '';
+  }, [search, options, value]);
 
   return {
     displayValue,
