@@ -9,6 +9,17 @@
     outline: 1px solid var(--color-border-default);
 }
 
+.selectContainerPortal{
+    position: fixed;
+    z-index: 100;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -25%);
+
+    width: 352px;
+    max-width: 100%;
+}
+
 .selectInput {
     cursor: pointer;
 

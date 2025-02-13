@@ -13,7 +13,7 @@ type Props<T extends PrimitiveType> = {
   placeholder?: string;
 };
 
-export const Select = <T extends PrimitiveType>({ options, value, onChange, isPortal = false, placeholder = '...select' }: Props<T>) => {
+export const Select = <T extends PrimitiveType>({ options, value, onChange, isPortal = true, placeholder = '...select' }: Props<T>) => {
   const {
     handleSelect,
     handleInputChange,
@@ -30,8 +30,14 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
     dropdownRef,
   } = useSelect(options, onChange, value);
 
-  return (
-    <div className={s.selectContainer} ref={selectRef} aria-expanded={isOpen} tabIndex={0} onKeyDown={onKeyDown}>
+  const selectContent = (
+    <div
+      className={`${s.selectContainer} ${isPortal ? s.selectContainerPortal : ''}`}
+      ref={selectRef}
+      aria-expanded={isOpen}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+    >
       <div
         className={s.selectInput}
         onClick={() => {
@@ -46,33 +52,23 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
           <Icon />
         </div>
       </div>
-      {isOpen &&
-        (isPortal ? (
-          createPortal(
-            <MemoizedDropdown
-              value={value}
-              filteredOptions={filteredOptions}
-              isOpen={isOpen}
-              handleSelect={handleSelect}
-              highlightIndex={highlightIndex}
-              selectedIndex={selectedIndex}
-              isKeyboardNavigation={isKeyboardNavigation}
-              dropdownRef={dropdownRef}
-            />,
-            document.body,
-          )
-        ) : (
-          <MemoizedDropdown
-            value={value}
-            filteredOptions={filteredOptions}
-            isOpen={isOpen}
-            handleSelect={handleSelect}
-            highlightIndex={highlightIndex}
-            selectedIndex={selectedIndex}
-            isKeyboardNavigation={isKeyboardNavigation}
-            dropdownRef={dropdownRef}
-          />
-        ))}
+      {isOpen && (
+        <MemoizedDropdown
+          value={value}
+          filteredOptions={filteredOptions}
+          isOpen={isOpen}
+          handleSelect={handleSelect}
+          highlightIndex={highlightIndex}
+          selectedIndex={selectedIndex}
+          isKeyboardNavigation={isKeyboardNavigation}
+          dropdownRef={dropdownRef}
+        />
+      )}
     </div>
   );
+
+  if (isPortal) {
+    return createPortal(selectContent, document.body);
+  }
+  return selectContent;
 };
