@@ -1,6 +1,6 @@
 import { Option } from '../types/types';
 
-export type State = {
+type State = {
   isOpen: boolean;
   search: string;
   filteredOptions: Option<any>[];

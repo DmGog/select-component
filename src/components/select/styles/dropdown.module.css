@@ -29,6 +29,10 @@
     text-align: center;
 }
 
+.focused {
+    background-color: var(--color-background-hover);
+}
+
 .selectItem:hover {
     background-color: var(--color-background-hover);
 }
