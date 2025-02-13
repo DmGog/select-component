@@ -1,50 +1,30 @@
-# React + TypeScript + Vite
+## Описание проекта
+Реализована функциональность согласно требованиям ТЗ.
+Дополнительно добавлена возможность управления с клавиатуры.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Архитектура
+- Логика вынесена в кастомный хук для удобства поддержки и изменения визуализации.
+- Использован `useReducer` для управления состоянием компонента.
+- Добавлена мемоизация, чтобы оптимизировать работу со списками.
+- Реализован модульный подход.
 
-Currently, two official plugins are available:
+## Использование `useReducer`
+Редьюсер используется для управления состоянием дропдауна.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Доступные действия:
+- `TOGGLE_DROPDOWN` — открыть/закрыть выпадающий список.
+- `CLOSE_DROPDOWN` — закрыть дропдаун и обновить выбранное значение.
+- `SEARCH_UPDATED` — обновить поисковой запрос и отфильтровать список опций.
+- `OPTION_SELECTED` — выбрать значение из списка.
 
-## Expanding the ESLint configuration
+## Управление с клавиатуры
+### Доступные действия:
+- `Enter` — открыть/закрыть дропдаун, выбрать выделенный элемент.
+- `ArrowDown` — перемещение вниз по списку.
+- `ArrowUp` — перемещение вверх по списку.
+- `Escape` — закрыть дропдаун.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Дополнительные возможности
+- `useHandleClickOutside` используется для закрытия дропдауна при клике вне области.
+- Поддержка работы с клавиатурой и мышью (фиксирует последнее взаимодействие).
+- Автоматический скролл к выделенному элементу в списке.
