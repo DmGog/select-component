@@ -53,7 +53,7 @@ export const useSelect = <T>(options: Option<T>[], onChange: (event: SelectEvent
     }
   }, [highlightIndex, isOpen, filteredOptions.length]);
 
-  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN' }));
+  useHandleClickOutside(selectRef, () => dispatch({ type: 'CLOSE_DROPDOWN', payload: value as string, options }));
 
   const handleSelect = useCallback(
     (option: Option<T>) => {

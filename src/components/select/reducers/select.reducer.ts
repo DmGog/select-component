@@ -8,7 +8,7 @@ type State = {
 
 export type Action =
   | { type: 'TOGGLE_DROPDOWN' }
-  | { type: 'CLOSE_DROPDOWN' }
+  | { type: 'CLOSE_DROPDOWN'; payload: string; options: Option<any>[] }
   | { type: 'SEARCH_UPDATED'; payload: string | null; options: Option<any>[] }
   | { type: 'OPTION_SELECTED'; payload: Option<any>; options: Option<any>[] };
 
@@ -17,7 +17,7 @@ export const selectReducer = (state: State, action: Action): State => {
     case 'TOGGLE_DROPDOWN':
       return { ...state, isOpen: !state.isOpen };
     case 'CLOSE_DROPDOWN':
-      return { ...state, isOpen: false };
+      return { ...state, isOpen: false, search: action.payload, filteredOptions: action.options };
     case 'SEARCH_UPDATED':
       return {
         ...state,
