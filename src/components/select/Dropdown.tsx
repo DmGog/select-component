@@ -23,7 +23,7 @@ const Dropdown = <T extends PrimitiveType>({
   dropdownRef,
 }: Props<T>) => {
   return (
-    <ul ref={dropdownRef} className={s.selectDropdown} role="listbox" aria-hidden={!isOpen}>
+    <ul ref={dropdownRef} className={s.selectDropdown} role="listbox" aria-hidden={!isOpen} id="dropdown-list">
       {filteredOptions.length > 0 ? (
         filteredOptions.map((option, index) => (
           <li

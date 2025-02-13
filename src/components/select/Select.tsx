@@ -37,6 +37,8 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
       aria-expanded={isOpen}
       tabIndex={0}
       onKeyDown={onKeyDown}
+      aria-haspopup="listbox"
+      aria-owns="dropdown-list"
     >
       <div
         className={s.selectInput}
@@ -45,9 +47,9 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
           handleMouseClick();
         }}
         role="combobox"
-        aria-haspopup="listbox"
+        aria-expanded={isOpen}
       >
-        <input type="text" value={displayValue} onChange={handleInputChange} placeholder={placeholder} />
+        <input type="text" value={displayValue} onChange={handleInputChange} placeholder={placeholder} aria-controls="dropdown-list" />
         <div className={`${s.icon} ${isOpen ? s.iconOpen : ''}`}>
           <Icon />
         </div>
