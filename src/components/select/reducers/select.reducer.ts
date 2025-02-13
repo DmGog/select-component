@@ -1,4 +1,5 @@
 import { Option } from '../types/types';
+import { options } from '@/mock-options/mock-options';
 
 type State = {
   isOpen: boolean;
@@ -17,7 +18,12 @@ export const selectReducer = (state: State, action: Action): State => {
     case 'TOGGLE_DROPDOWN':
       return { ...state, isOpen: !state.isOpen };
     case 'CLOSE_DROPDOWN':
-      return { ...state, isOpen: false, search: action.payload, filteredOptions: action.options };
+      return {
+        ...state,
+        isOpen: false,
+        search: options.find(option => option.value === action.payload)?.label || null,
+        filteredOptions: action.options,
+      };
     case 'SEARCH_UPDATED':
       return {
         ...state,
