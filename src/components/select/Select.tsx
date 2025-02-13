@@ -28,7 +28,6 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
     isKeyboardNavigation,
     handleMouseClick,
     dropdownRef,
-    handleOnBlur,
   } = useSelect(options, onChange, value);
 
   const selectContent = (
@@ -50,14 +49,7 @@ export const Select = <T extends PrimitiveType>({ options, value, onChange, isPo
         role="combobox"
         aria-expanded={isOpen}
       >
-        <input
-          type="text"
-          value={displayValue}
-          onChange={handleInputChange}
-          placeholder={placeholder}
-          aria-controls="dropdown-list"
-          onBlur={handleOnBlur}
-        />
+        <input type="text" value={displayValue} onChange={handleInputChange} placeholder={placeholder} aria-controls="dropdown-list" />
         <div className={`${s.icon} ${isOpen ? s.iconOpen : ''}`}>
           <Icon />
         </div>

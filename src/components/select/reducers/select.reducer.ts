@@ -8,10 +8,9 @@ type State = {
 
 export type Action =
   | { type: 'TOGGLE_DROPDOWN' }
-  | { type: 'CLOSE_DROPDOWN' }
+  | { type: 'CLOSE_DROPDOWN'; payload: string; options: Option<any>[] }
   | { type: 'SEARCH_UPDATED'; payload: string | null; options: Option<any>[] }
-  | { type: 'OPTION_SELECTED'; payload: Option<any>; options: Option<any>[] }
-  | { type: 'BLUR_EVENT'; payload: string; options: Option<any>[] };
+  | { type: 'OPTION_SELECTED'; payload: Option<any>; options: Option<any>[] };
 
 export const selectReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -21,6 +20,8 @@ export const selectReducer = (state: State, action: Action): State => {
       return {
         ...state,
         isOpen: false,
+        search: action.options.find(option => option.value === action.payload)?.label || null,
+        filteredOptions: action.options,
       };
     case 'SEARCH_UPDATED':
       return {
@@ -36,13 +37,6 @@ export const selectReducer = (state: State, action: Action): State => {
         ...state,
         search: null,
         isOpen: false,
-        filteredOptions: action.options,
-      };
-
-    case 'BLUR_EVENT':
-      return {
-        ...state,
-        search: action.options.find(option => option.value === action.payload)?.label || null,
         filteredOptions: action.options,
       };
     default:
